@@ -128,11 +128,13 @@ function accountSubmit() {
         createCookie(authTokenName, authToken);
         createCookie(userIDName, userID);
 
+        initiateBankOpen();
+
     } else {
         
         var sessionToken = "DENIED";
 
-        createCookie(sessionTokenName, sessionToken)
+        createCookie(sessionTokenName, sessionToken);
 
     }
 
