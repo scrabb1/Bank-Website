@@ -9,11 +9,11 @@ determines the success of the inputs alongside with potential authentication pro
 
 
 // Discerning the elements in the document that the user will input data into
-const usernameField = Document.querySelector("#Username");
-const passwordField = Document.querySelector("#Password");
+const usernameField = document.querySelector("#Username");
+const passwordField = document.querySelector("#Password");
 
 // The button that the user will click to submit their account data
-const accountSubmit = Document.querySelector("#submitAccount");
+const submitAccount = document.querySelector("#submitAccount");
 
 // Server URL to contact for credential verification
 
@@ -25,22 +25,50 @@ const authTokenName = "authToken"
 const userIDName = "userID"
 const sessionTokenName = "sessionToken"
 
+// Token Server Config
+
+const tokenServerURL = 'https://backendbank-w8al.onrender.com';
+const URLOnboarding = '/account-onboarding';
+const URLTest = '/test'
+
 // An event listener that is watching a click from the accountSubmit button and will call the accountSubmit function
-accountSubmit.addEventListener("click", accountSubmit());
+submitAccount.addEventListener("click", webRequestTest(tokenServerURL + URLOnboarding));
 
 /*
 
 Boilerplate cookie handling, probably not secure but whatever
-
 findCookieValue: basically indexes the cookies for the value after cookieName as provided
 changeCookieValue: uses the findCookieValue function to locate a value in the string and replace it
 createCookie: self expanatory
 
 */
 
+async function webRequestTest(url) {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        username:"test",
+        password:"test1"
+      }),
+      mode: 'no-cors',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+    console.log(json);
+    return json
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
 function findCookieValue(cookieName) {
 
-    const cookieValue = Document.cookie.split("; ").find((row) => row.startsWith(`${cookieName}=`)).split("=")[1];
+    const cookieValue = document.cookie.split("; ").find((row) => row.startsWith(`${cookieName}=`)).split("=")[1];
     return cookieValue;
 
 }
@@ -48,7 +76,7 @@ function findCookieValue(cookieName) {
 function changeCookieValue(cookieName, newValue) {
 
     const toReplace = findCookieValue(cookieName);
-    const newCookie = Document.cookie.replace(toReplace, newValue);
+    const newCookie = document.cookie.replace(toReplace, newValue);
 
     return newCookie;
 
@@ -57,7 +85,7 @@ function changeCookieValue(cookieName, newValue) {
 
 function createCookie(cookieName, cookieValue) {
 
-    Document.cookie = `${cookieName}=${cookieValue}; Secure`
+    document.cookie = `${cookieName}=${cookieValue}; Secure`
 
 }
 
@@ -113,8 +141,8 @@ async function fetchResponseTokenCredentials(url, usernameSubmitted, passwordSub
 
 function accountSubmit() {
 
-    let username = usernameField.innerHTML;
-    let password = passwordField.innerHTML;
+    let username = usernameField.value;
+    let password = passwordField.value;
 
     const responseObject = fetchResponseTokenCredentials(serverURL, username, password);
 
@@ -135,6 +163,7 @@ function accountSubmit() {
         var sessionToken = "DENIED";
 
         createCookie(sessionTokenName, sessionToken);
+        
 
     }
 
